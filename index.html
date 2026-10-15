@@ -1,0 +1,1021 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fire Alarm Test</title>
+<meta name="theme-color" content="#0B7A3B">
+<meta name="description" content="Weekly fire alarm test records for Crediton Care and Support Homes.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+:root{
+  --green:#0B7A3B; --green-ink:#FFFFFF; --green-soft:#E2F1E7;
+  --ink:#2B2B2B; --muted:#5B625C; --bg:#F1F4F0; --surface:#FFFFFF; --line:#D3DAD2;
+  --fail:#B42318; --fail-ink:#FFFFFF; --skip:#7A5C00; --skip-soft:#FFF3D1;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --green:#43C274; --green-ink:#0C1A11; --green-soft:#1B3223;
+    --ink:#ECEFEA; --muted:#A4ACA5; --bg:#131614; --surface:#1D211E; --line:#353C37;
+    --fail:#FF8B7C; --fail-ink:#2A0A06; --skip:#F2C94C; --skip-soft:#352D14;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --green:#43C274; --green-ink:#0C1A11; --green-soft:#1B3223;
+  --ink:#ECEFEA; --muted:#A4ACA5; --bg:#131614; --surface:#1D211E; --line:#353C37;
+  --fail:#FF8B7C; --fail-ink:#2A0A06; --skip:#F2C94C; --skip-soft:#352D14;
+  color-scheme: dark;
+}
+:root{ box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
+html{ scroll-padding-top:env(safe-area-inset-top,0px); background:var(--bg); }
+*,*::before,*::after{ box-sizing:inherit; }
+[hidden]{ display:none !important; }
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size:17px; line-height:1.45; -webkit-text-size-adjust:100%;
+}
+main{ max-width:560px; margin:0 auto; padding:22px 16px 132px; }
+button, input, select, textarea{ font:inherit; color:inherit; }
+button{ cursor:pointer; -webkit-tap-highlight-color:transparent; }
+:focus-visible{ outline:3px solid var(--green); outline-offset:2px; }
+
+.top{ padding:6px 2px 18px; }
+.org{ margin:0; color:var(--green); font-weight:700; font-size:15px; }
+h1{ margin:2px 0 6px; font-size:30px; line-height:1.12; letter-spacing:-0.01em; }
+.lede{ margin:0; color:var(--muted); }
+
+.step{ margin-top:26px; }
+.step h2{ display:flex; align-items:center; gap:10px; margin:0 0 12px; font-size:20px; }
+.num{
+  flex:none; width:30px; height:30px; border-radius:50%; display:grid; place-items:center;
+  font-size:15px; font-weight:700; border:2px solid var(--line); color:var(--muted);
+}
+.step.done .num{ background:var(--green); border-color:var(--green); color:var(--green-ink); }
+.step h2 .aside{ margin-left:auto; font-size:15px; font-weight:400; color:var(--muted); }
+.step.attention{ animation:nudge .6s ease; }
+@keyframes nudge{ 0%,100%{transform:none} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+@media (prefers-reduced-motion: reduce){ .step.attention{ animation:none; } }
+.hint{ margin:8px 0 0; color:var(--muted); font-size:15px; }
+.hint.warn{ color:var(--fail); font-weight:700; }
+
+.choices{ display:grid; gap:10px; }
+.choice{
+  text-align:left; background:var(--surface); border:2px solid var(--line); border-radius:14px;
+  padding:14px 16px; min-height:64px;
+}
+.choice strong{ display:block; font-size:19px; }
+.choice span{ color:var(--muted); font-size:15px; }
+.choice span.nxt{ color:var(--green); font-weight:700; }
+.choice[aria-pressed="true"]{ border-color:var(--green); background:var(--green-soft); }
+
+.weeks{ display:grid; grid-template-columns:repeat(5,1fr); gap:8px; }
+.wk{
+  position:relative; background:var(--surface); border:2px solid var(--line); border-radius:12px;
+  min-height:66px; padding:6px 2px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+.wk b{ font-size:22px; line-height:1; }
+.wk small{ font-size:12px; color:var(--muted); margin-top:4px; min-height:1em; }
+.wk.next{ border-color:var(--green); border-width:3px; background:var(--green-soft); }
+.wk.next small{ color:var(--green); font-weight:700; }
+.wk.done:not(.next):not([aria-pressed="true"]) b{ color:var(--muted); }
+.wk.done:not(.next):not([aria-pressed="true"]) small{ color:var(--green); }
+.nextup{ display:flex; align-items:center; gap:12px; background:var(--green-soft); border:2px solid var(--green); border-radius:12px; padding:12px 14px; margin:0 0 12px; }
+.nextup .txt{ flex:1; min-width:0; }
+.nextup .txt strong{ display:block; font-size:19px; white-space:nowrap; }
+.nextup .txt span{ color:var(--muted); font-size:15px; }
+.nextup .primary{ flex:none; min-height:46px; padding:0 16px; font-size:16px; }
+.nextup.plain{ background:var(--surface); border-color:var(--line); }
+.wk[aria-pressed="true"]{ background:var(--green); border-color:var(--green); color:var(--green-ink); }
+.wk[aria-pressed="true"] small{ color:var(--green-ink); }
+.wk.wide{ grid-column:1 / -1; flex-direction:row; justify-content:space-between; padding:10px 14px; min-height:54px; }
+.wk.wide b{ font-size:18px; }
+.wk.wide small{ margin:0; }
+
+.field{ display:block; margin-bottom:14px; }
+.field > span{ display:block; font-weight:700; margin-bottom:6px; }
+.input{
+  box-sizing:border-box; width:100%; min-height:50px; padding:11px 12px; background:var(--surface);
+  border:1.5px solid var(--line); border-radius:10px; font-size:17px;
+}
+textarea.input{ min-height:110px; resize:vertical; }
+.seg{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.seg button{
+  min-height:52px; border-radius:10px; border:2px solid var(--line); background:var(--surface); font-weight:700;
+}
+.seg button[aria-pressed="true"][data-v="Yes"]{ background:var(--green); border-color:var(--green); color:var(--green-ink); }
+.seg button[aria-pressed="true"][data-v="No"]{ background:var(--fail); border-color:var(--fail); color:var(--fail-ink); }
+
+.toolbar{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px; }
+.ghost{
+  background:transparent; border:1.5px solid var(--line); border-radius:10px; min-height:44px; padding:0 14px; font-weight:700;
+}
+.link{ background:none; border:0; color:var(--green); font-weight:700; padding:8px 4px; text-decoration:underline; text-underline-offset:3px; }
+.devs{ display:grid; gap:10px; }
+.dev{
+  background:var(--surface); border:1px solid var(--line); border-left:6px solid var(--line);
+  border-radius:12px; padding:12px 12px 12px 14px;
+}
+.dev[data-r="pass"]{ border-left-color:var(--green); }
+.dev[data-r="fail"]{ border-left-color:var(--fail); }
+.dev[data-r="skip"]{ border-left-color:var(--skip); }
+.dev-head{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:10px; }
+.dev-name{ font-weight:700; font-size:18px; line-height:1.25; }
+.tag{ flex:none; font-size:13px; color:var(--muted); border:1px solid var(--line); border-radius:999px; padding:1px 9px; }
+.res{ display:grid; grid-template-columns:1fr 1fr 1.25fr; gap:6px; }
+.res button{ min-height:46px; border-radius:10px; border:1.5px solid var(--line); background:transparent; font-weight:700; font-size:16px; }
+.res button[aria-pressed="true"][data-v="pass"]{ background:var(--green); border-color:var(--green); color:var(--green-ink); }
+.res button[aria-pressed="true"][data-v="fail"]{ background:var(--fail); border-color:var(--fail); color:var(--fail-ink); }
+.res button[aria-pressed="true"][data-v="skip"]{ background:var(--skip-soft); border-color:var(--skip); color:var(--skip); }
+.remove{ margin-top:6px; }
+#doorRes button[aria-pressed="true"][data-v="skip"]{ background:var(--bg); border-color:var(--muted); color:var(--ink); }
+.empty{ color:var(--muted); background:var(--surface); border:1.5px dashed var(--line); border-radius:12px; padding:16px; margin:0; }
+
+details.add, details.add *{ box-sizing:border-box; }
+details.add{ margin-top:12px; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:4px 14px; }
+details.add summary{ min-height:44px; display:flex; align-items:center; font-weight:700; cursor:pointer; color:var(--green); }
+details.add[open]{ padding-bottom:14px; }
+.addrow{ display:grid; grid-template-columns:minmax(0,1fr); gap:8px; }
+.addrow .input{ min-width:0; }
+
+.sigwrap{ position:relative; }
+#sigpad{
+  display:block; width:100%; height:150px; background:#FFFFFF; border:1.5px dashed var(--line);
+  border-radius:12px; touch-action:none;
+}
+.sigph{ position:absolute; inset:0; display:grid; place-items:center; color:#8A928B; pointer-events:none; font-size:16px; }
+.sigline{ position:absolute; left:18px; right:18px; bottom:34px; border-bottom:1px solid #C9D0C8; pointer-events:none; }
+.sigbar{ display:flex; justify-content:space-between; align-items:center; margin-top:6px; }
+.check{ display:flex; gap:10px; align-items:center; margin-top:12px; font-size:16px; }
+.check input{ width:22px; height:22px; accent-color:var(--green); }
+
+.bar{
+  position:fixed; left:0; right:0; bottom:0; background:var(--surface); border-top:1px solid var(--line);
+  padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px)); z-index:5;
+}
+.bar-inner{ max-width:560px; margin:0 auto; display:flex; align-items:center; gap:12px; }
+.bar-status{ flex:1; font-size:15px; color:var(--muted); line-height:1.3; }
+.bar-status strong{ color:var(--ink); display:block; font-size:16px; }
+.primary{
+  background:var(--green); color:var(--green-ink); border:0; border-radius:12px; min-height:52px; padding:0 22px; font-weight:700; font-size:17px;
+}
+.primary[disabled]{ opacity:.6; }
+
+.sheet{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:flex; align-items:flex-end; z-index:10; }
+.sheet-card{
+  width:100%; max-width:560px; margin:0 auto; background:var(--surface); border-radius:18px 18px 0 0;
+  padding:22px 20px calc(22px + env(safe-area-inset-bottom,0px));
+}
+.sheet-card h2{ margin:0 0 4px; font-size:22px; }
+.sheet-file{ margin:0 0 12px; color:var(--muted); font-size:15px; word-break:break-word; }
+.sheet-msg{ margin:0 0 16px; padding:12px 14px; border-radius:10px; background:var(--green-soft); }
+.sheet-msg.bad{ background:var(--skip-soft); }
+.sheet-actions{ display:grid; gap:10px; }
+.sheet-actions .primary, .sheet-actions .ghost{ width:100%; min-height:52px; }
+#shareBtn:not([hidden]) + #saveBtn{ background:transparent; color:var(--ink); border:1.5px solid var(--line); }
+.foot{ margin-top:34px; color:var(--muted); font-size:14px; }
+</style>
+</head>
+<body>
+<main>
+  <header class="top">
+    <p class="org">Crediton Care &amp; Support Homes</p>
+    <h1>Weekly fire alarm test</h1>
+    <p class="lede">Tick off each device as you go, sign, and save the record as a PDF.</p>
+  </header>
+
+  <section class="step" id="step-site">
+    <h2><span class="num">1</span>Site</h2>
+    <div class="choices" id="sites"></div>
+  </section>
+
+  <section class="step" id="step-week">
+    <h2><span class="num">2</span>Schedule week</h2>
+    <p class="empty" id="weekEmpty">Choose a site to see its weeks.</p>
+    <div class="nextup" id="nextUp" hidden></div>
+    <div class="weeks" id="weeks" hidden></div>
+    <p class="hint" id="weekHint"></p>
+  </section>
+
+  <section class="step" id="step-panel">
+    <h2><span class="num">3</span>Date and panel</h2>
+    <label class="field"><span>Date of test</span><input class="input" type="date" id="date"></label>
+    <div class="field"><span id="panelLbl">Fire alarm panel checked?</span>
+      <div class="seg" id="panel" role="group" aria-labelledby="panelLbl">
+        <button type="button" data-v="Yes" aria-pressed="false">Yes</button>
+        <button type="button" data-v="No" aria-pressed="false">No</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="step" id="step-devs">
+    <h2><span class="num">4</span>Devices<span class="aside" id="devCount"></span></h2>
+    <p class="empty" id="devEmpty">Choose a week to load its devices.</p>
+    <div id="devArea" hidden>
+      <div class="toolbar">
+        <span class="hint" style="margin:0">Pass means it sounded and reset correctly.</span>
+        <button type="button" class="ghost" id="allPass">Mark the rest as pass</button>
+      </div>
+      <div class="devs" id="devs"></div>
+      <details class="add" id="addBox">
+        <summary>Add a device not on the list</summary>
+        <div class="addrow">
+          <input class="input" id="addName" placeholder="Location, for example W Room 3" maxlength="60">
+          <select class="input" id="addType">
+            <option value="detector">Automatic detector</option>
+            <option value="call">Call point</option>
+            <option value="door">Automatic door release</option>
+          </select>
+          <button type="button" class="ghost" id="addBtn">Add device</button>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section class="step" id="step-door">
+    <h2><span class="num">5</span>Door release</h2>
+    <label class="field"><span>Which automatic door did you check?</span>
+      <input class="input" id="doorName" list="doorList" maxlength="60" placeholder="For example Eastleigh lounge door" autocomplete="off">
+      <datalist id="doorList"></datalist>
+    </label>
+    <div class="field"><span id="doorLbl">Did it release and close when the alarm sounded?</span>
+      <div class="res" id="doorRes" role="group" aria-labelledby="doorLbl">
+        <button type="button" data-v="pass" aria-pressed="false">Pass</button>
+        <button type="button" data-v="fail" aria-pressed="false">Faulty</button>
+        <button type="button" data-v="skip" aria-pressed="false">No door</button>
+      </div>
+      <p class="hint" id="doorHint">Choose No door if you did not check one this week.</p>
+    </div>
+  </section>
+
+  <section class="step" id="step-sign">
+    <h2><span class="num">6</span>Comments and signature</h2>
+    <label class="field"><span>Action taken or comments</span>
+      <textarea class="input" id="comments" maxlength="700" placeholder="Anything to note, and what you did about any failed device"></textarea>
+    </label>
+    <p class="hint warn" id="failHint" hidden>Something failed, so say what action you took.</p>
+    <label class="field"><span>Your name</span><input class="input" id="name" autocomplete="name" maxlength="50"></label>
+    <div class="field">
+      <span>Signature</span>
+      <div class="sigwrap">
+        <canvas id="sigpad" aria-label="Signature pad. Sign with your finger."></canvas>
+        <div class="sigline"></div>
+        <div class="sigph" id="sigph">Sign here with your finger</div>
+      </div>
+      <div class="sigbar">
+        <span class="hint" style="margin:0" id="sigState"></span>
+        <button type="button" class="link" id="sigClear">Clear signature</button>
+      </div>
+      <label class="check"><input type="checkbox" id="remember" checked> Remember my name and signature on this phone</label>
+    </div>
+  </section>
+
+  <p class="foot">Everything is saved on this phone only. Your progress is kept until you start a new test, so you can close the app mid round and come back.</p>
+</main>
+
+<div class="bar">
+  <div class="bar-inner">
+    <div class="bar-status" id="status"></div>
+    <button type="button" class="primary" id="create">Create PDF</button>
+  </div>
+</div>
+
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="sheet-card">
+    <h2 id="sheetTitle">PDF created</h2>
+    <p class="sheet-file" id="sheetFile"></p>
+    <p class="sheet-msg" id="sheetMsg"></p>
+    <div class="sheet-actions">
+      <button type="button" class="primary" id="shareBtn" hidden>Email or share PDF</button>
+      <button type="button" class="primary" id="saveBtn">Save PDF to phone</button>
+      <button type="button" class="ghost" id="newBtn">Start the next test</button>
+      <button type="button" class="link" id="closeBtn">Back to this test</button>
+    </div>
+  </div>
+</div>
+
+<script src="pdf-lib.min.js"></script>
+<script>
+(function(){
+"use strict";
+
+/* ---------- Test schedules ---------- */
+const SITES = {
+  ew: {
+    name: "Eastleigh and Westleigh", file: "Eastleigh and Westleigh",
+    sub: "15 weeks plus Fred's tests",
+    weeks: [
+      ["Eastleigh Room 1 (66)","Eastleigh Fire Panel (82)","Eastleigh Lounge Lobby End (20)","Westleigh Room 1 (92)","Westleigh Lounge (34)","Accounts Office (63)","Westleigh Outside Office (102)"],
+      ["Managers Office","Eastleigh Dining Hatch End (16)","Westleigh Room 2 (93)","Westleigh Dining W'Side (28)","Annexe 4 (58)","Annexe 4 Bedroom (60)","Annexe 4 Lounge (61)","Annexe 1 Call Point"],
+      ["Managers Office (69)","Eastleigh O/S Room 8/9 (87)","Eastleigh Bottom Lounge Call Point","Westleigh Room 4 (106)","Westleigh Bottom Corridor O/S Room 7 (39)","Annexe 3 Lounge (53)"],
+      ["Eastleigh Room 4 (70)","E D/S Lobby (18)","Westleigh Room 5 (108)","Westleigh Back Lounge (36)","W Bottom of Stairs Call Point","Annexe 3 Hall (55)"],
+      ["Eastleigh Room 5 (74)","E Bottom of Stairs Call Point","Main Office Centre (3)","Westleigh Room 6 (109)","Westleigh O/S Kitchen (23)","Annexe 3 Bedroom (57)"],
+      ["Eastleigh Room 6 (81)","Eastleigh Lounge Garden End (21)","E O/S Room 8 Call Point","Westleigh Room 7 (42)","Westleigh Immersion Cupboard Heat Detector (96)","W O/S Room 7 Call Point"],
+      ["Eastleigh Room 7 (83)","Laundry (7)","Westleigh O/S Room 1/2 (94)","Westleigh Dining E'Side (27)","Annexe 1 (46)","Outside Annexe 3 and 4 Call Point by Front Door"],
+      ["Eastleigh Room 8 (86)","Eastleigh O/S Room 2/3 (68)","Eastleigh Lounge TV Cabinet","Westleigh O/S Bathroom (95)","Westleigh Bottom of Stairs (32)","Annexe 2 Lounge Far End (50)","Accounts Office Call Point"],
+      ["Eastleigh Room 9 (90)","Eastleigh Office (77)","E Fire Panel Call Point","Main Office Cupboard (4)","Westleigh Top of Stairs (100)","W Back Lounge Call Point","Annexe 1 Lobby (44)"],
+      ["Eastleigh Room 10 (91)","Eastleigh Kitchen Utility (9)","E O/S Room 4 Call Point","Westleigh O/S Garden Door (29)","Westleigh Mains Cupboard (38)","Annexe 2 Bedroom (47)"],
+      ["Eastleigh Bottom of Stairs (13)","Eastleigh Room 2 (67)","Main Office Corner (1)","Annexe 3 Door (59)","Annexe 2 Cupboard (52)","Art Room Call Point"],
+      ["Eastleigh Dining Lounge End (17)","Eastleigh O/S Room 4/5 (71)","Westleigh Main Stairs Cupboard","Westleigh Office (103)","Managers Office","Annexe 2 Call Point"],
+      ["Eastleigh Cleaning Cupboard (75)","E Kitchen Call Point","Main Office Entrance (5)","Westleigh O/S Room 4 (104)","Annexe 2 Lounge by Door (48)","Annexe 2 Door (64)"],
+      ["Eastleigh Staff Toilet (78)","Eastleigh Top Lounge (85)","Eastleigh Top of Stairs (76)","Westleigh Top Corridor (107)","W O/S Kitchen Call Point","Outside Managers Office"],
+      ["Eastleigh O/S Room (79)","Annexe 3 Hall Door (66)","Main Office Entrance Call Point","Westleigh Top of Back Stairs (111)","W Top of Main Stairs Call Point","Annexe 4 Door (67)"]
+    ],
+    extra: { key:"fred", label:"Fred's tests", file:"Fred Tests", sub:"Kitchen heat and loft detectors",
+      devices:["Eastleigh Kitchen Heat Detector (11)","Westleigh Kitchen Heat Detector (26)","All Detectors in Loft Spaces"] }
+  },
+  wl: {
+    name: "Woodleigh", file: "Woodleigh", sub: "4 weeks",
+    weeks: [
+      ["Room 2","Room 3","Room 4","Room 5","Woodleigh Office"],
+      ["Front Door Call Point","Lounge Detector","MM's Bedroom Detector","Kitchen Detector","Kitchen Larder Detector"],
+      ["Understairs Detector","Top of Stairs Detector","Call Point Top of Stairs"],
+      ["Kitchen Utility Detector","SF Annexe Call Point","SF Outside Room Detector","SF Annexe Detector"]
+    ]
+  }
+};
+const TYPE_LABEL = { call:"Call point", detector:"Detector", door:"Door release" };
+const LOGO = "data:image/png;base64,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";
+const typeOf = n => /call point/i.test(n) ? "call" : "detector";
+
+/* ---------- Storage (per phone, never required) ---------- */
+const store = {
+  get(k){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; }catch(e){ return null; } },
+  set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} },
+  del(k){ try{ localStorage.removeItem(k); }catch(e){} }
+};
+
+/* ---------- State ---------- */
+function todayISO(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function blank(){ return { site:null, week:null, date:todayISO(), panel:null, results:{}, extras:[], door:{ name:"", result:"" }, comments:"", name:"", remember:true }; }
+let state = blank();
+let sigData = null;
+let history = store.get("fat:history") || { ew:{}, wl:{} };
+let pdfBytes = null, pdfName = "";
+
+const SCHED_V = 2;
+const draft = store.get("fat:draft");
+if(draft && draft.state && draft.v !== SCHED_V){ draft.state.week = null; draft.state.results = {}; draft.state.extras = []; }
+if(draft && draft.state){ state = Object.assign(blank(), draft.state); if(!state.door) state.door = { name:"", result:"" }; sigData = draft.sig || null; }
+else {
+  const me = store.get("fat:me");
+  if(me){ state.name = me.name || ""; sigData = me.sig || null; }
+}
+
+let saveTimer = null;
+function saveDraft(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>store.set("fat:draft",{ state, sig:sigData, v:SCHED_V }), 250);
+}
+
+/* ---------- Helpers ---------- */
+const $ = id => document.getElementById(id);
+const el = (tag, attrs, kids) => {
+  const n = document.createElement(tag);
+  if(attrs) for(const k in attrs){ if(k==="text") n.textContent = attrs[k]; else if(k==="cls") n.className = attrs[k]; else n.setAttribute(k, attrs[k]); }
+  (kids||[]).forEach(c => n.appendChild(c));
+  return n;
+};
+function weekList(site){
+  const s = SITES[site]; if(!s) return [];
+  const list = s.weeks.map((d,i)=>({ key:String(i+1), label:"Week "+(i+1), file:"Week "+(i+1), devices:d, n:i+1 }));
+  if(s.extra) list.push(Object.assign({ n:null }, s.extra));
+  return list;
+}
+function currentWeek(){ return weekList(state.site).find(w => w.key === state.week) || null; }
+function devices(){
+  const w = currentWeek(); if(!w) return [];
+  return w.devices.map((name,i)=>({ id:"s"+i, name, type:typeOf(name) }))
+    .concat(state.extras.map(x => ({ id:x.id, name:x.name, type:x.type, extra:true })));
+}
+function doorItem(){
+  const d = state.door;
+  if(!d || !d.result || d.result === "skip") return null;
+  return { id:"door", name:d.name.trim() || "Door release", type:"door", result:d.result };
+}
+function resultOf(item){ return item.id === "door" ? item.result : state.results[item.id]; }
+function allItems(){ const d = doorItem(); return d ? [d].concat(devices()) : devices(); }
+let doorHistory = store.get("fat:doors") || { ew:[], wl:[] };
+function shortDate(iso){ return new Date(iso+"T12:00:00").toLocaleDateString("en-GB",{ day:"numeric", month:"short" }); }
+function longDate(iso){ return new Date(iso+"T12:00:00").toLocaleDateString("en-GB",{ weekday:"long", day:"numeric", month:"long", year:"numeric" }); }
+function ukDate(iso){ const [y,m,d] = iso.split("-"); return d+"/"+m+"/"+y; }
+function nextWeekKey(site){
+  const h = history[site] || {};
+  const count = SITES[site].weeks.length;
+  if(h.last && /^\d+$/.test(h.last)) return String(Number(h.last) % count + 1);
+  let best = null;
+  weekList(site).forEach(w => { if(w.n && h[w.key] && (!best || h[w.key] > best.date)) best = { n:w.n, date:h[w.key] }; });
+  if(!best) return null;
+  return String(best.n % count + 1);
+}
+
+/* ---------- Rendering ---------- */
+function renderSites(){
+  const box = $("sites"); box.textContent = "";
+  Object.keys(SITES).forEach(k => {
+    const s = SITES[k];
+    const b = el("button",{ type:"button", cls:"choice", "data-site":k, "aria-pressed": String(state.site===k) },
+      [ el("strong",{ text:s.name }), el("span",{ text: nextWeekKey(k) ? "Next up: Week " + nextWeekKey(k) : s.sub, cls: nextWeekKey(k) ? "nxt" : "" }) ]);
+    box.appendChild(b);
+  });
+}
+function doneThisRound(site, iso){
+  if(!iso) return false;
+  const days = (new Date(todayISO()+"T12:00:00") - new Date(iso+"T12:00:00")) / 86400000;
+  return days < SITES[site].weeks.length * 7;
+}
+function renderNextUp(nxt){
+  const nb = $("nextUp"); nb.textContent = "";
+  nb.hidden = !state.site;
+  if(!state.site) return;
+  if(!nxt){
+    nb.className = "nextup plain";
+    nb.appendChild(el("div",{ cls:"txt" }, [ el("strong",{ text:"Choose the week you are on" }),
+      el("span",{ text:"After you create its PDF, the app will pick the next week for you." }) ]));
+    return;
+  }
+  nb.className = "nextup";
+  const onIt = state.week === nxt;
+  nb.appendChild(el("div",{ cls:"txt" }, [ el("strong",{ text:"Next up: Week " + nxt }),
+    el("span",{ text: onIt ? "Selected below. Work through the devices in step 4." : "Following on from your last test." }) ]));
+  if(!onIt) nb.appendChild(el("button",{ type:"button", cls:"primary", "data-week":nxt, text:"Start week " + nxt }));
+}
+function renderWeeks(){
+  const box = $("weeks"); box.textContent = "";
+  $("weekEmpty").hidden = !!state.site; box.hidden = !state.site;
+  if(!state.site){ $("weekHint").textContent = ""; renderNextUp(null); return; }
+  const h = history[state.site] || {};
+  const nxt = nextWeekKey(state.site);
+  renderNextUp(nxt);
+  weekList(state.site).forEach(w => {
+    const done = h[w.key];
+    const isNext = w.key === nxt;
+    const fresh = w.n && doneThisRound(state.site, done);
+    const small = isNext ? "Next" : (done ? (fresh ? "\u2713 " : "") + shortDate(done) : "");
+    const b = el("button",{ type:"button", cls:"wk"+(w.n ? "" : " wide")+(isNext ? " next" : "")+(fresh ? " done" : ""), "data-week":w.key,
+      "aria-pressed": String(state.week===w.key),
+      "aria-label": w.label + (done ? ", last done "+longDate(done) : "") + (isNext ? ", next due" : "") },
+      [ el("b",{ text: w.n ? String(w.n) : w.label }), el("small",{ text: w.n ? small : (done ? "Last done "+shortDate(done) : w.sub) }) ]);
+    box.appendChild(b);
+  });
+  const w = currentWeek();
+  let hint = "";
+  if(w){ hint = w.label + ": " + w.devices.length + " devices" + (h[w.key] ? ". Last done " + longDate(h[w.key]) + "." : "."); }
+  else if(nxt){ hint = "Week " + nxt + " is next in the cycle."; }
+  $("weekHint").textContent = hint;
+}
+function renderPanel(){
+  $("date").value = state.date || "";
+  [...$("panel").children].forEach(b => b.setAttribute("aria-pressed", String(state.panel === b.dataset.v)));
+}
+function renderDevs(){
+  const list = devices();
+  $("devEmpty").hidden = list.length > 0 || !!state.week;
+  $("devArea").hidden = !state.week;
+  if(!state.week){ $("devEmpty").hidden = false; }
+  const box = $("devs"); box.textContent = "";
+  list.forEach(d => {
+    const r = state.results[d.id] || "";
+    const btn = (v, label) => el("button",{ type:"button", "data-dev":d.id, "data-v":v, "aria-pressed": String(r===v) }, [document.createTextNode(label)]);
+    const kids = [
+      el("div",{ cls:"dev-head" }, [ el("span",{ cls:"dev-name", text:d.name }), el("span",{ cls:"tag", text:TYPE_LABEL[d.type] }) ]),
+      el("div",{ cls:"res", role:"group", "aria-label":"Result for "+d.name }, [ btn("pass","Pass"), btn("fail","Fail"), btn("skip","Not tested") ])
+    ];
+    if(d.extra) kids.push(el("button",{ type:"button", cls:"link remove", "data-remove":d.id, text:"Remove this device" }));
+    box.appendChild(el("div",{ cls:"dev", "data-r":r }, kids));
+  });
+  const done = list.filter(d => state.results[d.id]).length;
+  $("devCount").textContent = list.length ? done + " of " + list.length + " done" : "";
+}
+function renderDoor(){
+  $("doorName").value = state.door.name;
+  [...$("doorRes").children].forEach(b => b.setAttribute("aria-pressed", String(state.door.result === b.dataset.v)));
+  const dl = $("doorList"); dl.textContent = "";
+  (doorHistory[state.site] || []).forEach(n => dl.appendChild(el("option",{ value:n })));
+  const need = (state.door.result === "pass" || state.door.result === "fail") && !state.door.name.trim();
+  $("doorHint").textContent = need ? "Add which door you checked." : "Choose No door if you did not check one this week.";
+  $("doorHint").classList.toggle("warn", need);
+}
+function renderSign(){
+  $("comments").value = state.comments;
+  $("name").value = state.name;
+  $("remember").checked = !!state.remember;
+  const anyFail = allItems().some(d => resultOf(d) === "fail");
+  $("failHint").hidden = !(anyFail && !state.comments.trim());
+  $("sigph").hidden = !!sigData;
+  $("sigState").textContent = sigData ? "Signed" : "";
+}
+function stepDone(){
+  const list = devices();
+  const anyFail = allItems().some(d => resultOf(d) === "fail");
+  const door = state.door;
+  return {
+    "step-site": !!state.site,
+    "step-week": !!state.week,
+    "step-panel": !!state.date && !!state.panel,
+    "step-devs": list.length > 0 && list.every(d => state.results[d.id]) && list.some(d => state.results[d.id] !== "skip"),
+    "step-door": door.result === "skip" || ((door.result === "pass" || door.result === "fail") && !!door.name.trim()),
+    "step-sign": !!state.name.trim() && !!sigData && (!anyFail || !!state.comments.trim())
+  };
+}
+function renderStatus(){
+  const done = stepDone();
+  Object.keys(done).forEach(id => $(id).classList.toggle("done", done[id]));
+  const list = devices();
+  let t;
+  if(!state.site) t = ["Start here", "Choose a site"];
+  else if(!state.week) t = [SITES[state.site].name, "Choose a week"];
+  else {
+    const n = list.filter(d => state.results[d.id]).length;
+    t = [currentWeek().label, n + " of " + list.length + " devices checked"];
+  }
+  const s = $("status"); s.textContent = "";
+  s.appendChild(el("strong",{ text:t[0] })); s.appendChild(document.createTextNode(t[1]));
+}
+function renderAll(){ renderSites(); renderWeeks(); renderPanel(); renderDevs(); renderDoor(); renderSign(); renderStatus(); }
+
+/* ---------- Events ---------- */
+$("sites").addEventListener("click", e => {
+  const b = e.target.closest("[data-site]"); if(!b) return;
+  if(state.site !== b.dataset.site){ state.site = b.dataset.site; state.week = nextWeekKey(state.site); state.results = {}; state.extras = []; state.door = { name:"", result:"" }; }
+  saveDraft(); renderAll();
+});
+function pickWeek(e){
+  const b = e.target.closest("[data-week]"); if(!b) return;
+  if(state.week !== b.dataset.week){ state.week = b.dataset.week; state.results = {}; state.extras = []; }
+  saveDraft(); renderAll();
+}
+$("weeks").addEventListener("click", pickWeek);
+$("nextUp").addEventListener("click", pickWeek);
+$("date").addEventListener("change", e => { state.date = e.target.value; saveDraft(); renderStatus(); });
+$("panel").addEventListener("click", e => {
+  const b = e.target.closest("[data-v]"); if(!b) return;
+  state.panel = b.dataset.v; saveDraft(); renderPanel(); renderStatus();
+});
+$("devs").addEventListener("click", e => {
+  const rm = e.target.closest("[data-remove]");
+  if(rm){ state.extras = state.extras.filter(x => x.id !== rm.dataset.remove); delete state.results[rm.dataset.remove]; saveDraft(); renderDevs(); renderSign(); renderStatus(); return; }
+  const b = e.target.closest("[data-dev]"); if(!b) return;
+  const id = b.dataset.dev, v = b.dataset.v;
+  state.results[id] = state.results[id] === v ? undefined : v;
+  if(!state.results[id]) delete state.results[id];
+  saveDraft(); renderDevs(); renderSign(); renderStatus();
+});
+$("allPass").addEventListener("click", () => {
+  devices().forEach(d => { if(!state.results[d.id]) state.results[d.id] = "pass"; });
+  saveDraft(); renderDevs(); renderSign(); renderStatus();
+});
+$("addBtn").addEventListener("click", () => {
+  const name = $("addName").value.trim();
+  if(!name){ $("addName").focus(); return; }
+  if(state.extras.length >= 10) return;
+  state.extras.push({ id:"x"+Date.now(), name, type:$("addType").value });
+  $("addName").value = "";
+  saveDraft(); renderDevs(); renderStatus();
+});
+$("doorName").addEventListener("input", e => { state.door.name = e.target.value; saveDraft(); renderStatus(); const need = (state.door.result === "pass" || state.door.result === "fail") && !state.door.name.trim(); $("doorHint").classList.toggle("warn", need); $("doorHint").textContent = need ? "Add which door you checked." : "Choose No door if you did not check one this week."; });
+$("doorRes").addEventListener("click", e => {
+  const b = e.target.closest("[data-v]"); if(!b) return;
+  state.door.result = state.door.result === b.dataset.v ? "" : b.dataset.v;
+  saveDraft(); renderDoor(); renderSign(); renderStatus();
+});
+$("comments").addEventListener("input", e => { state.comments = e.target.value; saveDraft(); renderSign(); renderStatus(); });
+$("name").addEventListener("input", e => { state.name = e.target.value; saveDraft(); renderStatus(); });
+$("remember").addEventListener("change", e => { state.remember = e.target.checked; if(!state.remember){ store.del("fat:me"); saveCloud(); } saveDraft(); });
+
+/* ---------- Signature pad ---------- */
+const pad = $("sigpad"), ctx = pad.getContext("2d");
+let bounds = null, drawing = false, last = null, cssW = 0, cssH = 0;
+function setupPad(){
+  const r = pad.getBoundingClientRect(); const dpr = window.devicePixelRatio || 1;
+  if(!r.width) return;
+  cssW = r.width; cssH = r.height;
+  pad.width = Math.round(cssW*dpr); pad.height = Math.round(cssH*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.strokeStyle = "#1A1D1B"; ctx.lineWidth = 2.4;
+  bounds = null;
+  if(sigData){
+    const img = new Image();
+    img.onload = () => {
+      const s = Math.min((cssW-24)/img.width, (cssH-24)/img.height, 1);
+      const w = img.width*s, h = img.height*s, x = (cssW-w)/2, y = (cssH-h)/2;
+      ctx.drawImage(img, x, y, w, h);
+      bounds = { x0:x, y0:y, x1:x+w, y1:y+h };
+    };
+    img.src = sigData;
+  }
+}
+function pt(e){ const r = pad.getBoundingClientRect(); return { x:e.clientX - r.left, y:e.clientY - r.top }; }
+function grow(p){ if(!bounds) bounds = { x0:p.x, y0:p.y, x1:p.x, y1:p.y }; else { bounds.x0 = Math.min(bounds.x0,p.x); bounds.y0 = Math.min(bounds.y0,p.y); bounds.x1 = Math.max(bounds.x1,p.x); bounds.y1 = Math.max(bounds.y1,p.y); } }
+pad.addEventListener("pointerdown", e => {
+  e.preventDefault(); drawing = true; last = pt(e); grow(last);
+  try{ pad.setPointerCapture(e.pointerId); }catch(_){}
+  ctx.beginPath(); ctx.arc(last.x, last.y, 1.2, 0, Math.PI*2); ctx.fillStyle = "#1A1D1B"; ctx.fill();
+  $("sigph").hidden = true;
+});
+pad.addEventListener("pointermove", e => {
+  if(!drawing) return; e.preventDefault();
+  const p = pt(e); ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.stroke(); last = p; grow(p);
+});
+function endStroke(){
+  if(!drawing) return; drawing = false;
+  sigData = exportSig(); saveDraft(); renderSign(); renderStatus();
+}
+pad.addEventListener("pointerup", endStroke);
+pad.addEventListener("pointercancel", endStroke);
+function exportSig(){
+  if(!bounds) return null;
+  const dpr = pad.width / cssW, padPx = 6;
+  const x = Math.max(0, Math.floor((bounds.x0-padPx)*dpr)), y = Math.max(0, Math.floor((bounds.y0-padPx)*dpr));
+  const w = Math.min(pad.width - x, Math.ceil((bounds.x1-bounds.x0+padPx*2)*dpr));
+  const h = Math.min(pad.height - y, Math.ceil((bounds.y1-bounds.y0+padPx*2)*dpr));
+  if(w < 4 || h < 4) return null;
+  const c = document.createElement("canvas"); c.width = w; c.height = h;
+  c.getContext("2d").drawImage(pad, x, y, w, h, 0, 0, w, h);
+  return c.toDataURL("image/png");
+}
+$("sigClear").addEventListener("click", () => {
+  ctx.clearRect(0,0,cssW,cssH); bounds = null; sigData = null;
+  saveDraft(); renderSign(); renderStatus();
+});
+let rz = null;
+window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { if(Math.abs(pad.getBoundingClientRect().width - cssW) > 1) setupPad(); }, 150); });
+
+/* ---------- Validation ---------- */
+function problem(){
+  const list = devices();
+  if(!state.site) return ["step-site","Choose a site first."];
+  if(!state.week) return ["step-week","Choose the schedule week."];
+  if(!state.date) return ["step-panel","Add the date of the test."];
+  if(!state.panel) return ["step-panel","Answer whether the panel was checked."];
+  const open = list.filter(d => !state.results[d.id]);
+  if(open.length) return ["step-devs", open.length === 1 ? "Mark "+open[0].name+" as pass, fail or not tested." : "Mark the "+open.length+" remaining devices."];
+  if(!list.some(d => state.results[d.id] !== "skip")) return ["step-devs","At least one device needs testing."];
+  if(!state.door.result) return ["step-door","Record the door release check, or choose No door."];
+  if(state.door.result !== "skip" && !state.door.name.trim()) return ["step-door","Add which door you checked."];
+  if(allItems().some(d => resultOf(d) === "fail") && !state.comments.trim()) return ["step-sign","Say what action you took for the fault."];
+  if(!state.name.trim()) return ["step-sign","Add your name."];
+  if(!sigData) return ["step-sign","Add your signature."];
+  return null;
+}
+function flag(id, msg){
+  const s = $("status"); s.textContent = ""; s.appendChild(el("strong",{ text:"Not ready yet" })); s.appendChild(document.createTextNode(msg));
+  const sec = $(id); sec.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start" });
+  sec.classList.remove("attention"); void sec.offsetWidth; sec.classList.add("attention");
+}
+
+/* ---------- PDF ---------- */
+const WINANSI_EXTRA = "€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•˜™š›œžŸ";
+function clean(s){
+  return String(s || "").replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"').replace(/[\u2013\u2014]/g,",")
+    .replace(/\r/g,"").split("").map(ch => (ch === "\n" || (ch.charCodeAt(0) >= 32 && ch.charCodeAt(0) <= 126) || (ch.charCodeAt(0) >= 160 && ch.charCodeAt(0) <= 255) || WINANSI_EXTRA.includes(ch)) ? ch : "").join("");
+}
+function wrap(text, f, size, maxW){
+  const out = [];
+  String(text).split("\n").forEach(para => {
+    const words = para.split(/\s+/).filter(Boolean);
+    if(!words.length){ out.push(""); return; }
+    let line = "";
+    words.forEach(word => {
+      let w = word;
+      while(f.widthOfTextAtSize(w, size) > maxW){
+        let i = w.length; while(i > 1 && f.widthOfTextAtSize(w.slice(0,i), size) > maxW) i--;
+        if(line){ out.push(line); line = ""; }
+        out.push(w.slice(0,i)); w = w.slice(i);
+      }
+      if(!w) return;
+      const t = line ? line + " " + w : w;
+      if(f.widthOfTextAtSize(t, size) <= maxW) line = t; else { out.push(line); line = w; }
+    });
+    if(line) out.push(line);
+  });
+  return out;
+}
+
+async function buildPdf(){
+  const L = window.PDFLib;
+  if(!L) throw new Error("nolib");
+  const { PDFDocument, StandardFonts, rgb } = L;
+  const doc = await PDFDocument.create();
+  const W = 595.28, H = 841.89, M = 40, CW = W - 2*M;
+  const reg = await doc.embedFont(StandardFonts.Helvetica);
+  const bold = await doc.embedFont(StandardFonts.HelveticaBold);
+  const logo = await doc.embedPng(LOGO);
+  const GREEN = rgb(11/255,122/255,59/255), GREY = rgb(43/255,43/255,43/255), MUTED = rgb(0.38,0.4,0.38),
+        LINE = rgb(0.72,0.75,0.72), TINT = rgb(0.89,0.945,0.91), ZEBRA = rgb(0.965,0.975,0.965), WHITE = rgb(1,1,1),
+        RED = rgb(0.7,0.14,0.09), RED_SOFT = rgb(0.99,0.9,0.88),
+        AMBER = rgb(0.48,0.36,0), AMBER_SOFT = rgb(1,0.94,0.78);
+
+  const site = SITES[state.site], wk = currentWeek();
+  const name = clean(state.name.trim());
+  doc.setTitle("Fire Alarm Weekly Test, " + site.name + ", " + wk.label + ", " + ukDate(state.date));
+  doc.setAuthor(name); doc.setCreator("Weekly fire alarm test"); doc.setProducer("Weekly fire alarm test");
+
+  /* Rows: every device on the week's list in order, then the door release check */
+  const rows = devices().map(d => ({ name: clean(d.name), type: TYPE_LABEL[d.type], r: state.results[d.id] }));
+  const door = state.door || { name:"", result:"" };
+  if(door.result === "skip") rows.push({ name: "No door release checked this week", type: "Door release", r: "skip" });
+  else if(door.result) rows.push({ name: clean(door.name.trim() || "Door release"), type: "Door release", r: door.result });
+  const passN = rows.filter(x => x.r === "pass").length;
+  const failN = rows.filter(x => x.r === "fail").length;
+  const skipN = rows.filter(x => x.r === "skip").length;
+
+  let page, y;
+  const text = (s, x, yTop, size, f, color) => page.drawText(s, { x, y: H - yTop - size*0.78, size, font:f, color: color || GREY });
+  const box = (x, yTop, w, h, fill, border) => page.drawRectangle({ x, y: H - yTop - h, width:w, height:h, color: fill,
+    borderColor: border === false ? undefined : (border || LINE), borderWidth: border === false ? 0 : 0.8 });
+  const centre = (s, x, w, yTop, size, f, color) => text(s, x + (w - f.widthOfTextAtSize(s, size))/2, yTop, size, f, color);
+
+  function header(first){
+    page = doc.addPage([W,H]);
+    const lw = first ? 160 : 130, lh = lw * logo.height / logo.width;
+    page.drawImage(logo, { x:(W-lw)/2, y: H - M + 6 - lh, width:lw, height:lh });
+    y = M - 6 + lh + 10;
+    page.drawRectangle({ x:M, y:H - y - 3, width:CW, height:3, color:GREEN });
+    y += 12;
+    if(first){
+      centre("FIRE ALARM WEEKLY TEST RECORD", M, CW, y, 15, bold, GREY);
+      y += 26;
+    }
+  }
+
+  header(true);
+
+  /* Details */
+  const lw = 150, vw = CW - lw, rh = 21;
+  const detail = (label, value, f, color) => {
+    box(M, y, lw, rh, TINT); text(label, M + 10, y + (rh - 10)/2, 10, bold, GREY);
+    box(M + lw, y, vw, rh); text(value, M + lw + 10, y + (rh - 10.5)/2, 10.5, f || reg, color || GREY);
+    y += rh;
+  };
+  detail("Building", clean(site.name), bold);
+  detail("Test schedule", wk.n ? wk.label + " of " + site.weeks.length : clean(wk.label));
+  detail("Date of test", longDate(state.date));
+  detail("Tested by", name);
+  detail("Fire alarm panel checked", state.panel === "No" ? "NO" : "YES", bold, state.panel === "No" ? RED : GREEN);
+  y += 12;
+
+  /* Summary: three coloured tiles so the outcome is seen at a glance */
+  const gap = 10, tw = (CW - 2*gap)/3, th = 40;
+  [["PASSED", passN, GREEN, WHITE, GREEN], ["FAILED", failN, failN ? RED : WHITE, failN ? WHITE : MUTED, failN ? RED : LINE],
+   ["NOT TESTED", skipN, skipN ? AMBER_SOFT : WHITE, skipN ? AMBER : MUTED, skipN ? AMBER : LINE]].forEach((t, i) => {
+    const x = M + i*(tw + gap);
+    box(x, y, tw, th, t[2], t[4]);
+    centre(String(t[1]), x, tw, y + 7, 18, bold, t[3]);
+    centre(t[0], x, tw, y + 26, 8.5, bold, t[3]);
+  });
+  y += th + 14;
+
+  /* Device table */
+  const c1 = CW * 0.56, c2 = CW * 0.2, c3 = CW - c1 - c2, hh = 24, PAD = 9, FS = 10.5, LH = 13;
+  const BOTTOM = H - M - 30;
+  const tableHead = () => {
+    box(M, y, CW, hh, GREEN, GREEN);
+    text("Device / location", M + PAD, y + (hh - 10)/2, 10, bold, WHITE);
+    text("Type", M + c1 + PAD, y + (hh - 10)/2, 10, bold, WHITE);
+    centre("Result", M + c1 + c2, c3, y + (hh - 10)/2, 10, bold, WHITE);
+    y += hh;
+  };
+  tableHead();
+  rows.forEach((r, i) => {
+    const lines = wrap(r.name, reg, FS, c1 - 2*PAD);
+    const h = Math.max(23, lines.length * LH + 10);
+    if(y + h > BOTTOM){ header(false); tableHead(); }
+    box(M, y, CW, h, i % 2 ? ZEBRA : WHITE);
+    let ty = y + (h - lines.length*LH)/2 + (LH - FS)/2;
+    lines.forEach(l => { text(l, M + PAD, ty, FS, reg, GREY); ty += LH; });
+    text(r.type, M + c1 + PAD, y + (h - 10)/2, 10, reg, MUTED);
+    const label = r.r === "pass" ? "PASS" : r.r === "fail" ? "FAIL" : "NOT TESTED";
+    const fill = r.r === "pass" ? GREEN : r.r === "fail" ? RED : AMBER_SOFT;
+    const ink = r.r === "skip" ? AMBER : WHITE;
+    const pw = c3 - 24, ph = 18, px = M + c1 + c2 + 12, py = y + (h - ph)/2;
+    box(px, py, pw, ph, fill, r.r === "skip" ? AMBER : false);
+    centre(label, px, pw, py + (ph - 9.5)/2, 9.5, bold, ink);
+    y += h;
+  });
+  page.drawRectangle({ x:M, y:H - y, width:CW, height:0.8, color:LINE });
+  y += 14;
+
+  /* Comments and action taken */
+  let comments = clean(state.comments.trim()) || "None";
+  const cLines = wrap(comments, reg, FS, CW - 2*PAD);
+  const barH = 22, cH = Math.max(3, cLines.length) * LH + 2*PAD;
+  if(y + barH + cH > BOTTOM){ header(false); }
+  box(M, y, CW, barH, TINT); text("Comments and action taken", M + PAD, y + (barH - 10)/2, 10, bold, GREY); y += barH;
+  box(M, y, CW, cH);
+  let cy = y + PAD;
+  cLines.forEach(l => { text(l, M + PAD, cy, FS, reg, GREY); cy += LH; });
+  y += cH + 14;
+
+  /* Signatures */
+  const sh = 58, half = (CW - 12)/2;
+  if(y + barH + sh > BOTTOM){ header(false); }
+  const sigBlock = (x, title, drawSig, nameTxt, dateTxt) => {
+    box(x, y, half, barH, TINT); text(title, x + PAD, y + (barH - 10)/2, 10, bold, GREY);
+    box(x, y + barH, half, sh);
+    if(drawSig) drawSig(x, y + barH);
+    const ly = y + barH + sh - 14;
+    text("Name: " + nameTxt, x + PAD, ly, 9, reg, nameTxt ? GREY : MUTED);
+    const dt = "Date: " + dateTxt;
+    text(dt, x + half - PAD - reg.widthOfTextAtSize(dt, 9), ly, 9, reg, dateTxt ? GREY : MUTED);
+  };
+  let sigImg = null;
+  if(sigData) sigImg = await doc.embedPng(sigData);
+  sigBlock(M, "Signature of tester", sigImg ? (x, yt) => {
+    const s = Math.min((half - 2*PAD)/sigImg.width, 32/sigImg.height);
+    page.drawImage(sigImg, { x: x + PAD, y: H - yt - 6 - sigImg.height*s, width: sigImg.width*s, height: sigImg.height*s });
+  } : null, name, ukDate(state.date));
+  sigBlock(M + half + 12, "Issues resolved by", (x, yt) => {
+    page.drawLine({ start:{ x:x + PAD, y:H - yt - 34 }, end:{ x:x + half - PAD, y:H - yt - 34 }, thickness:0.6, color:LINE });
+  }, "", "");
+  y += barH + sh;
+
+  /* Footer on every page */
+  const now = new Date();
+  const stamp = ukDate(todayISO()) + " at " + String(now.getHours()).padStart(2,"0") + ":" + String(now.getMinutes()).padStart(2,"0");
+  const pages = doc.getPages();
+  pages.forEach((p, i) => {
+    p.drawLine({ start:{ x:M, y:M + 6 }, end:{ x:W - M, y:M + 6 }, thickness:0.6, color:LINE });
+    p.drawText("Crediton Care & Support Homes Ltd. Fire alarm weekly test record. Created " + stamp + ".", { x:M, y:M - 6, size:7.5, font:reg, color:MUTED });
+    const pg = "Page " + (i+1) + " of " + pages.length;
+    p.drawText(pg, { x:W - M - reg.widthOfTextAtSize(pg, 7.5), y:M - 6, size:7.5, font:reg, color:MUTED });
+  });
+
+  return await doc.save();
+}
+
+/* ---------- Saving ---------- */
+const hasClaude = false; /* standalone version: no Claude account features */
+let framed = true; try{ framed = window.self !== window.top; }catch(_){ framed = true; }
+const downloadsP = hasClaude ? window.claude.use("downloads").catch(() => null) : Promise.resolve(null);
+function sheetMsg(t, bad){ const m = $("sheetMsg"); m.textContent = t; m.classList.toggle("bad", !!bad); }
+function pdfBlob(){ return new Blob([pdfBytes], { type:"application/pdf" }); }
+
+async function savePdf(){
+  if(!pdfBytes) return;
+  $("saveBtn").disabled = true;
+  try{
+    const dl = await downloadsP;
+    if(dl){
+      try{
+        const r = await dl.save({ filename: pdfName, data: pdfBlob() });
+        sheetMsg(r.status === "saved"
+          ? "Saved. Open it from your downloads and use Share to email it to yourself or add it to OneDrive."
+          : "Sent where you chose.");
+      }catch(err){
+        const c = err && err.code;
+        if(c === "declined") sheetMsg("Not saved. Tap Save PDF when you are ready.", true);
+        else if(c === "rate_limited") sheetMsg("A save prompt is already open. Finish that one first.", true);
+        else if(framed) sheetMsg("This view cannot save files. Open the app in the Claude app on your phone, signed in to your work account, or use Email or share PDF.", true);
+        else plainDownload();
+      }
+    } else if(framed) sheetMsg("This view cannot save files. Open the app in the Claude app on your phone, signed in to your work account, or use Email or share PDF.", true);
+    else plainDownload();
+  } finally { $("saveBtn").disabled = false; }
+}
+function plainDownload(){
+  const url = URL.createObjectURL(pdfBlob());
+  const a = document.createElement("a"); a.href = url; a.download = pdfName; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 30000);
+  sheetMsg("Downloaded. Open it from your downloads and use Share to email it to yourself or add it to OneDrive.");
+}
+async function sharePdf(){
+  try{
+    const file = new File([pdfBytes], pdfName, { type:"application/pdf" });
+    await navigator.share({ files:[file], title: pdfName.replace(/\.pdf$/,"") });
+    sheetMsg("Sent to your chosen app.");
+  }catch(err){
+    if(err && err.name === "AbortError") return;
+    $("shareBtn").hidden = true;
+    sheetMsg("Sharing is blocked in this view. Use Save PDF to phone instead.", true);
+  }
+}
+
+$("create").addEventListener("click", async () => {
+  const p = problem();
+  if(p){ flag(p[0], p[1]); return; }
+  const btn = $("create"); btn.disabled = true; btn.textContent = "Creating";
+  try{
+    pdfBytes = await buildPdf();
+    const site = SITES[state.site], wk = currentWeek();
+    const [yy,mo,dd] = state.date.split("-");
+    const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    pdfName = "Fire Alarm Test " + site.file + " " + wk.file + " " + Number(dd) + " " + MON[Number(mo)-1] + " " + yy + ".pdf";
+    history[state.site] = history[state.site] || {};
+    history[state.site][state.week] = state.date;
+    if(currentWeek().n){ history[state.site].last = state.week; history[state.site].lastAt = new Date().toISOString(); }
+    store.set("fat:history", history);
+    if(state.remember) store.set("fat:me", { name: state.name, sig: sigData });
+    const dn = state.door.name.trim();
+    if(dn && state.door.result !== "skip"){
+      const arr = (doorHistory[state.site] || []).filter(n => n.toLowerCase() !== dn.toLowerCase());
+      arr.unshift(dn); doorHistory[state.site] = arr.slice(0,12); store.set("fat:doors", doorHistory);
+    }
+    saveCloud();
+    $("sheetFile").textContent = pdfName;
+    sheetMsg("Your record is ready. Tap Email or share PDF, pick Outlook, and send it to yourself.");
+    let canShare = false;
+    try{ canShare = !!navigator.canShare && navigator.canShare({ files:[new File([pdfBytes], pdfName, { type:"application/pdf" })] }); }catch(_){}
+    $("shareBtn").hidden = !canShare;
+    $("sheet").hidden = false;
+    renderWeeks();
+    if(!canShare){ sheetMsg("Your record is ready to save."); savePdf(); }
+  }catch(err){
+    const s = $("status"); s.textContent = "";
+    s.appendChild(el("strong",{ text:"PDF not created" }));
+    s.appendChild(document.createTextNode(err && err.message === "nolib" ? "The PDF tool did not load. Check your signal and reload the page." : "Something went wrong building the PDF. Try again."));
+  }finally{ btn.disabled = false; btn.textContent = "Create PDF"; }
+});
+$("saveBtn").addEventListener("click", savePdf);
+$("shareBtn").addEventListener("click", sharePdf);
+$("closeBtn").addEventListener("click", () => { $("sheet").hidden = true; });
+$("newBtn").addEventListener("click", () => {
+  const keep = { site: state.site, week: state.site ? nextWeekKey(state.site) : null, name: state.remember ? state.name : "", remember: state.remember };
+  state = Object.assign(blank(), keep);
+  if(!state.remember) sigData = null;
+  store.del("fat:draft");
+  $("sheet").hidden = true;
+  pdfBytes = null;
+  setupPad(); renderAll();
+  window.scrollTo({ top:0 });
+});
+document.addEventListener("keydown", e => { if(e.key === "Escape" && !$("sheet").hidden) $("sheet").hidden = true; });
+
+/* ---------- Week record saved to the viewer's account ---------- */
+let cloud = null, cloudPath = null, cloudBusy = Promise.resolve();
+function mergeHistory(a, b){
+  const out = {};
+  Object.keys(SITES).forEach(site => {
+    const x = (a && a[site]) || {}, y = (b && b[site]) || {}, m = {};
+    new Set([...Object.keys(x), ...Object.keys(y)]).forEach(k => {
+      if(k === "last" || k === "lastAt") return;
+      const vx = x[k], vy = y[k];
+      m[k] = !vx ? vy : !vy ? vx : (vx > vy ? vx : vy);
+    });
+    const ax = x.lastAt || "", ay = y.lastAt || "";
+    const pick = (x.last && (!y.last || ax >= ay)) ? x : y;
+    if(pick.last){ m.last = pick.last; if(pick.lastAt) m.lastAt = pick.lastAt; }
+    out[site] = m;
+  });
+  return out;
+}
+function mergeDoors(a, b){
+  const out = {};
+  Object.keys(SITES).forEach(site => {
+    const seen = new Set(), list = [];
+    [...((a && a[site]) || []), ...((b && b[site]) || [])].forEach(n => { const k = String(n).toLowerCase(); if(!seen.has(k)){ seen.add(k); list.push(n); } });
+    out[site] = list.slice(0, 12);
+  });
+  return out;
+}
+function myDetails(){ return state.remember && (state.name.trim() || sigData) ? { name: state.name.trim(), sig: sigData || null } : null; }
+function saveCloud(){
+  if(!cloud || !cloudPath) return;
+  cloudBusy = cloudBusy.then(async () => {
+    let data = {};
+    try{ const snap = await cloud.doc(cloudPath).get(); if(snap.exists) data = snap.data() || {}; }catch(_){}
+    history = mergeHistory(history, data.history);
+    doorHistory = mergeDoors(doorHistory, data.doors);
+    store.set("fat:history", history); store.set("fat:doors", doorHistory);
+    await cloud.doc(cloudPath).set({ history: JSON.parse(JSON.stringify(history)), doors: JSON.parse(JSON.stringify(doorHistory)),
+      me: myDetails(), updatedAt: new Date().toISOString() });
+  }).catch(() => {});
+}
+async function initCloud(){
+  if(!hasClaude) return;
+  try{
+    const [d, u] = await Promise.all([window.claude.use("db").catch(() => null), window.claude.use("user").catch(() => null)]);
+    const id = u ? await u.id() : null;
+    if(!d || !id) return;
+    cloud = d; cloudPath = "data/users/" + id + "/fire";
+    const snap = await d.doc(cloudPath).get();
+    const data = snap.exists ? (snap.data() || {}) : {};
+    const before = JSON.stringify([history, doorHistory]);
+    history = mergeHistory(history, data.history);
+    doorHistory = mergeDoors(doorHistory, data.doors);
+    store.set("fat:history", history); store.set("fat:doors", doorHistory);
+    if(!snap.exists || JSON.stringify([data.history || {}, data.doors || {}]) !== JSON.stringify([history, doorHistory])) saveCloud();
+    if(data.me && !state.name.trim() && !sigData){
+      state.name = data.me.name || ""; sigData = data.me.sig || null;
+      store.set("fat:me", { name: state.name, sig: sigData }); setupPad();
+    }
+    if(state.site && !state.week){ state.week = nextWeekKey(state.site); saveDraft(); }
+    if(before !== JSON.stringify([history, doorHistory]) || state.site) renderAll();
+  }catch(_){ /* keep working from this phone's copy */ }
+}
+
+/* ---------- Start ---------- */
+renderAll();
+/* Works offline once opened, and asks the phone to keep the saved weeks */
+if("serviceWorker" in navigator) window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
+try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(_){}
+requestAnimationFrame(setupPad);
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if(Math.abs(pad.getBoundingClientRect().width - cssW) > 1) setupPad(); });
+})();
+</script>
+</body>
+</html>

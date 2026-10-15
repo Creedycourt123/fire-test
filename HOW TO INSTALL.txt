@@ -1,0 +1,97 @@
+CCSH FIRE ALARM TEST: STANDALONE APP (TRIAL)
+=============================================
+
+WHAT IS IN THIS FOLDER
+  index.html        The app itself
+  manifest.json     Tells the phone the app's name, colours and icon
+  sw.js             Lets the app work with no signal
+  pdf-lib.min.js    Makes the PDFs
+  4 .png files      The app icon in different sizes
+
+Keep all of these files together in one folder. Do not rename them.
+There are no subfolders, so every file can be uploaded in one go,
+even from a phone.
+
+This version does not need Claude. Everything (finished weeks, your
+name, signature and door names) is saved on the phone only. It works
+with no signal once it has been opened once.
+
+
+PART 1: PUT THE APP ONLINE (FREE, ABOUT 20 MINUTES)
+---------------------------------------------------
+The app needs a web address before it can be installed. GitHub Pages
+gives you one for free.
+
+1. Go to github.com and create a free account.
+2. Tap the + at the top right and choose "New repository".
+3. Name it fire-test, tick "Public", then tap "Create repository".
+4. Tap "uploading an existing file".
+5. Select every file from this folder (all 9 of them, the guide is
+   optional) and tap "Commit changes".
+   Check the files sit at the top of the repository, NOT inside a
+   folder. If you see a folder called "CCSH Fire Test App..." the app
+   will not install; delete it and upload the files themselves.
+6. Go to Settings, then Pages (on the left).
+7. Under "Branch" choose "main" and "/ (root)", then tap Save.
+8. After a minute or two the page shows your web address, for example:
+   https://yourname.github.io/fire-test/
+   Open it on your phone to check the app loads.
+
+The app holds no care records, only device names, so it is safe for
+this page to be public. Your test results never leave the phone.
+
+
+PART 2, OPTION A: INSTALL IT ON YOUR PHONE (2 MINUTES)
+------------------------------------------------------
+1. Open your web address in Chrome on your Android phone.
+2. Tap the three dots menu, then "Install app" (or "Add to Home screen").
+3. It now has its own icon, opens full screen like any app, and
+   works with no signal.
+
+For most people this is all you need.
+
+IF IT SAYS "THIS APP CANNOT BE INSTALLED"
+• Check the address ends in github.io, not github.com. The github.com
+  page only shows the files; it is not the app.
+• Check the files are at the top of the repository and not in a folder
+  (see Part 1, step 5).
+• If you uploaded an older copy that had an "icons" folder, delete
+  everything in the repository and upload this new copy instead.
+• Wait two minutes after uploading, then close the tab, reopen the
+  address and pull down to refresh before trying again.
+• Work phones managed by the company often block installing apps.
+  If so, tap the three dots menu, then "Add to Home screen", then
+  choose "Create shortcut". It still gets an icon on the home screen,
+  works with no signal and keeps your finished weeks. The only
+  difference is that it opens with Chrome's address bar showing.
+
+
+PART 2, OPTION B: MAKE A REAL ANDROID APP FILE (ABOUT 30 MINUTES)
+-----------------------------------------------------------------
+1. Go to pwabuilder.com.
+2. Paste in your web address and tap "Start".
+3. Tap "Package for stores", then "Android", then "Generate Package".
+4. Download the zip it makes. Inside is an .apk file (to install on
+   phones directly) and an .aab file (for the Google Play Store).
+5. To install the .apk: copy it to the phone, open it, and allow
+   "Install unknown apps" when asked.
+6. To put it on the Google Play Store you need a Google Play developer
+   account (a one off fee of 25 US dollars) and to upload the .aab file.
+   This is only worth doing if lots of staff will use it.
+
+
+UPDATING THE APP LATER
+----------------------
+1. Upload the new index.html to your GitHub repository (replace the old one).
+2. Open sw.js on GitHub, tap the pencil, and change
+   fire-test-v1 to fire-test-v2 (then v3 next time, and so on).
+   This tells phones to fetch the new version.
+3. Phones pick up the update the next time the app is opened with signal.
+
+
+THINGS TO KNOW
+--------------
+• If you uninstall the app or clear Chrome's data, the record of
+  finished weeks is lost. The PDFs you saved or emailed are not affected.
+• Each phone keeps its own record, so use the same phone each time.
+• To share the PDF, use "Email or share PDF" after creating it, as before.
